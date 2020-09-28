@@ -1,4 +1,3 @@
-
 Building = {
     Workbench = {
         Crude = "Workbench",
@@ -6,7 +5,7 @@ Building = {
         Masonry = "MasonryBench",
         Structural = "WorkbenchStructural",
         BasicMetal = "BasicMetalWorkbench",
-        Metal = "MetalWorkbench",
+        Metal = "MetalWorkbench"
     },
     BotWorkbench = {
         BotMk1 = "WorkerWorkbenchMk1",
@@ -34,7 +33,7 @@ Building = {
         Bot = "StorageWorker",
         Fertiliser = "StorageFertiliser",
         Sand = "StorageSand",
-        SandBig = "StorageSandMedium"        ,
+        SandBig = "StorageSandMedium",
         Seedlings = "StorageSeedlings"
     },
     FolkSeedPod = "FolkSeedPod",
@@ -46,7 +45,8 @@ Building = {
         BrickHut = "BrickHut",
         Mansion = "Mansion",
         Castle = "Castle",
-        Pyramid = "TranscendBuilding"
+        Pyramid = "TranscendBuilding",
+        Any = "HouseAny"
     },
     ResearchStation = {
         Mk1 = "ResearchStationCrude",
@@ -101,7 +101,7 @@ Building = {
     },
     Door = {
         GateFence = "Gate",
-        GatePicket ="GatePicket",
+        GatePicket = "GatePicket",
         BlockDoor = "BlockDoor",
         StoneArch = "StoneArch",
         StoneArchDoor = "StoneArchDoor",
@@ -132,7 +132,7 @@ Building = {
     Barn = "Barn",
     ChickenCoop = "ChickenCoop",
     Aquarium = {
-        Crude: "Aquarium",
+        Crude = "Aquarium",
         Good = "AquariumGood"
     },
     Beehive = {
@@ -183,7 +183,7 @@ Building = {
         Wall = "CastleWall",
         PlainTower = "CastlePlainTower",
         FancyTower = "CastleFancyTower",
-        Gate=  "CastleGate",
+        Gate = "CastleGate",
         Drawbridge = "CastleDrawbridge"
     },
     StreetLamp = "StreetLamp"

@@ -19,6 +19,9 @@ Animal = {
         OrangeRoughy = "FishOrangeRoughy",
         Monkfish = "FishMonkfish",
         Perch = "FishPerch",
-        Marlin = "FishMarlin"
-    }
+        Marlin = "FishMarlin",
+        Any = "FishAny"
+    },
+    Dog = "AnimalPetDog",
+    Dog2 = "AnimalPetDog2"
 }
