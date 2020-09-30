@@ -1,4 +1,67 @@
-Instruction = {
+-- ModScript
+ModScript = {}
+
+ModScript.AddInstruction = function(Type, ArgName, Args, Children1, Children2)
+    ModDebug.Log(
+        "AddInstruction " .. (Type or "nil") .. " - " .. (ArgName or "nil") .. " - " .. json.serialize(Args or {})
+    )
+    local instruction = {}
+
+    instruction.Type = Type
+    instruction.Line = -1
+    instruction.OT = "Total"
+    instruction.UID = 0
+    instruction.X = 0
+    instruction.Y = 0
+    instruction.V1 = ""
+    instruction.V2 = ""
+    instruction.A = "Total"
+    instruction.R = ""
+    instruction.AT = 4
+    instruction.AOT = "Total"
+
+    if (ArgName ~= nil) then
+        instruction.ArgName = ArgName
+    end
+
+    if (Args ~= nil) then
+        if (Args.OT ~= nil) then
+            instruction.OT = Args.OT
+        end
+        if (Args.UID ~= nil) then
+            instruction.UID = Args.UID
+        end
+        if (Args.X ~= nil) then
+            instruction.X = Args.X
+        end
+        if (Args.Y ~= nil) then
+            instruction.Y = Args.Y
+        end
+        if (Args.A ~= nil) then
+            instruction.A = Args.A
+        end
+        if (Args.R ~= nil) then
+            instruction.R = Args.R
+        end
+        if (Args.AT ~= nil) then
+            instruction.AT = Args.AT
+        end
+        if (Args.AOT ~= nil) then
+            instruction.AOT = Args.AOT
+        end
+    end
+
+    if (Children1 ~= nil) then
+        instruction.Children = Children1
+    end
+    if (Children2 ~= nil) then
+        instruction.Children2 = Children2
+    end
+
+    return instruction
+end
+
+ModScript.Instruction = {
     Forever = "InstructionForever",
     Repeat = "InstructionRepeat",
     Wait = "InstructionWait",
@@ -31,69 +94,16 @@ Instruction = {
     FindNearestObject = "InstructionFindNearestObject"
 }
 
-local function ScriptInstruction(Type, ArgName, Args, Children1, Children2)
-    local instruction = {}
-
-    instruction.Type = Type
-    instruction.Line = -1
-    if (ArgName ~= nil) then
-        instruction.ArgName = Args
-    end
-
-    if (Args ~= nil) then
-        if (Args.OT ~= nil) then
-            instruction.OT = Args.OT
-        end
-        if (Args.UID ~= nil) then
-            instruction.UID = Args.UID
-        end
-        if (Args.X ~= nil) then
-            instruction.X = Args.X
-        end
-        if (Args.Y ~= nil) then
-            instruction.Y = Args.Y
-        end
-        if (Args.A ~= nil) then
-            instruction.A = Args.A
-        end
-        if (Args.R ~= nil) then
-            instruction.R = Args.R
-        end
-        if (Args.AT ~= nil) then
-            instruction.AT = Args.AT
-        end
-        if (Args.AOT ~= nil) then
-            instruction.AOT = Args.AOT
-        end
-    end
-
-    if (Children1 ~= nil) then
-        instruction.Children = {}
-    end
-    if (Children2 ~= nil) then
-        instruction.Children2 = {}
-    end
-
-    return instruction
-end
-
-local function ActionInstruction(typeAction)
-    return function(Args)
-        Args.A = typeAction
-        return ScriptInstruction(typeAction)(Args)
-    end
-end
-
-Action = {
+ModScript.Action = {
     Hide = "Hide",
     Show = "Show",
     Move = {
         To = "MoveTo",
         ToLessOne = "MoveToLessOne",
         ToRange = "MoveToRange",
-        Forward = "MoveForward",
         Forwards = "MoveForwards",
         Backwards = "MoveBackwards",
+        Forward = "MoveForward",
         Direction = "MoveDirection"
     },
     Turn = "Turn",
@@ -139,9 +149,45 @@ Action = {
     Total = "Total"
 }
 
+ModScript.FindNearestObject = function(ItemType, Zone)
+    return ModScript.AddInstruction(
+        ModScript.Instruction.FindNearestObject,
+        Zone .. " Full",
+        {
+            OT = ItemType,
+            AT = 0,
+            A = ModScript.Action.Pickup
+        }
+    )
+end
+
+ModScript.MoveToObject = function(ItemType)
+    return ModScript.AddInstruction(
+        ModScript.Instruction.Move,
+        nil,
+        {
+            OT = ItemType,
+            AT = 0,
+            A = ModScript.Action.Pickup
+        }
+    )
+end
+
+ModScript.PickObject = function(ItemType)
+    return ModScript.AddInstruction(
+        ModScript.Instruction.Pickup,
+        nil,
+        {
+            OT = ItemType,
+            AT = 0,
+            A = ModScript.Action.Pickup
+        }
+    )
+end
+
 local function ScriptBlock(Type, ArgName, Args)
     return function(Children, Children2)
-        return ScriptInstruction(Type, ArgName, Args, Children, Children2)
+        return ModScript.AddInstruction(Type, ArgName, Args, Children, Children2)
     end
 end
 
@@ -155,7 +201,7 @@ local function RepeatInstructionUID(UntilArg)
     end
 end
 
-Repeat = {
+ModScript.Repeat = {
     Forever = RepeatInstruction("RepeatForever"),
     Times = RepeatInstruction("RepeatTimes"),
     Until = {
@@ -190,9 +236,9 @@ Repeat = {
 local function IfInstruction(ConditionArg, Args)
     return function(Children, ElseChildren)
         if (ElseChildren ~= nil) then
-            return ScriptInstruction(Instruction.IfElse, ConditionArg, Args, Children, ElseChildren)
+            return AddInstruction(Instruction.IfElse, ConditionArg, Args, Children, ElseChildren)
         else
-            return ScriptInstruction(Instruction.If, ConditionArg, Args, Children)
+            return AddInstruction(Instruction.If, ConditionArg, Args, Children)
         end
     end
 end
@@ -203,7 +249,7 @@ local function IfInstructionUID(ConditionArg)
     end
 end
 
-If = {
+ModScript.If = {
     Hands = {
         Full = IfInstruction("IfHandsFull"),
         NotFull = IfInstruction("IfHandsNotFull"),
@@ -231,14 +277,17 @@ If = {
     Hear = "IfHear"
 }
 
-function SetScript(botUID, script)
+ModScript.SetBotScript = function(botUID, script)
+    ModDebug.Log("SetScript " .. botUID)
     local serialized_script = json.serialize(script)
+    local botName = ModBot.GetName(botUID)
+    ModDebug.Log("serialized_script " .. serialized_script)
     if serialized_script ~= "" then
         ModDebug.Log(
-            "About to attempt to overwrite bot (" .. botUID .. ") script: " .. ModBot.GetScriptSavegameFormat(botUID)
+            "About to attempt to overwrite bot (" .. botName .. ") script: " .. ModBot.GetScriptSavegameFormat(botUID)
         )
         if ModBot.SetScriptSavegameFormat(botUID, serialized_script, true) then
-            ModDebug.Log("ModBot.SetScriptSavegameFormat DONE : Bot (" .. botUID .. ") re-programmed!")
+            ModDebug.Log("ModBot.SetScriptSavegameFormat DONE : Bot (" .. botName .. ") re-programmed!")
             ModBot.RechargeBot(botUID)
             ModBot.StartScript(botUID)
         end

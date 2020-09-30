@@ -3,7 +3,8 @@ function SteamDetails()
 end
 
 function ResetBotScript()
-    local botUID = ModBot.GetAllBotUIDs()[0]
+    local botUID = ModBot.GetAllBotUIDs()[1]
+    ModDebug.Log("botUID " .. botUID)
 
     -- usage example
     ModLib.SetScript(
@@ -13,15 +14,9 @@ function ResetBotScript()
                 {
                     Repeat.Until.Hands.Full(
                         {
-                            Instruction.FindNearestObject(Item.Coal),
-                            Instruction.Move(Target),
-                            Instruction.Pickup(Target)
-                        }
-                    ),
-                    Instruction.Move(storageUID),
-                    Repeat.Until.Hands.Empty(
-                        {
-                            Instruction.AddResource(storageUID)
+                            FindNearestObject(Item.Coal, "85 89 102 106"),
+                            MoveToObject(Item.Coal),
+                            PickObject(Item.Coal)
                         }
                     )
                 }
